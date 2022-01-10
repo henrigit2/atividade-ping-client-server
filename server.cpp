@@ -1,17 +1,22 @@
 #include <iostream>
-#include "actions/Server.h"
+#include <memory>
+#include "server-client/Server.h"
 
 using namespace std;
 
 int main(){
 
-    Server server;
 
-    server.createServer();
-    server.listenServer();
-    server.pingServer();
+    unique_ptr<Server> server(new Server);
+
+    server->createServer();
+    server->listenServer();
+    server->pingServer();
     
-    server.closeServer();
+    server->closeServer();
+
+    server.reset();
+    
 
     return 0;
 }

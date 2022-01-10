@@ -1,36 +1,4 @@
-#ifndef SERVER_H
-#define SERVER_H
-
-#include <iostream>
-#include <sys/socket.h>
-#include <string.h>
-#include <netinet/ip_icmp.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <memory>
-#include "../entities/Icmp.h"
-
-
-
-
-using namespace std;
-
-class Server {
-    private:
-        int socket_conn;
-        int newsocket_conn;
-        sockaddr_in address;
-
-    public:
-        void createServer();
-        void listenServer();
-        void readServer(char *buffer);
-        void sendServer(char *buffer);
-        void pingServer();
-        void closeServer();
-        //void Error(string erro);
-};
-
+#include "Server.h"
 
 void Server::createServer(){
 
@@ -76,25 +44,23 @@ void Server::sendServer(char *buffer){
 }
 
 void Server::pingServer(){
-    Icmp pkt;
+    IMCPstruct pkt;
+    ICMP icmp;
 
-    pkt.type = 0;
-
-    char *d;
-
-    encode(d, pkt);
+    char d[2];
+    
 
     while(true){
 
-        //unique_ptr<Server> server(new Server);
-        char buffer[1024];
+        char buffer[2];
         this->readServer(buffer);
+        icmp.decodeICMP(buffer, &pkt);
+        cout << "ping(" << "type:" << pkt.type << "; code:" << pkt.code << ")" << endl;
 
-        cout << buffer << endl;
-
-        char *buffer2 = "Hello client";
-
-        this->sendServer(buffer2);
+        pkt.type = 0;
+        pkt.code = 0;
+        icmp.encodeICMP(pkt, d);
+        this->sendServer(d);
         
     }
 }
@@ -102,6 +68,3 @@ void Server::pingServer(){
 void Server::closeServer(){
     close(socket_conn);
 }
-
-
-#endif

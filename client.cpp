@@ -1,18 +1,22 @@
 #include <iostream>
-#include "actions/Client.h"
+#include <memory>
+#include "server-client/Client.h"
 
 using namespace std;
 
 int main(){
 
-    Client client;
 
-    client.createClient();
-    client.connectClient();
-    client.pingClient();
+    unique_ptr<Client> client(new Client);
 
-    client.closeClient();
 
+    client->createClient();
+    client->connectClient();
+    client->pingClient();
+
+    client->closeClient();
+
+    client.reset();
     
 
     return 0;
